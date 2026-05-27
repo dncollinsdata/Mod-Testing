@@ -1,0 +1,17 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Real Gravity Blocks (Resources)",
+    "description": "Textures, particles and sounds for Real Gravity Blocks.",
+    "uuid": "8572d66d-218c-47e4-8a66-12b0645d7134",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 0]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "e6c4f12e-4f55-4281-bf5c-1f1cea48c639",
+      "version": [1, 0, 0]
+    }
+  ]
+}

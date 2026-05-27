@@ -1,0 +1,7 @@
+tile.rgb:support_beam.name=Support Beam
+tile.rgb:reinforced_block.name=Reinforced Block
+item.rgb:gravity_scanner=Gravity Scanner
+item.rgb:gravity_wrench=Gravity Wrench
+item.rgb:collapse_tester=Collapse Tester
+pack.name=Real Gravity Blocks
+pack.description=Blocks fall when nothing holds them up.

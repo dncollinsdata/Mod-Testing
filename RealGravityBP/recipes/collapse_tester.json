@@ -1,0 +1,19 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shaped": {
+    "description": { "identifier": "rgb:collapse_tester" },
+    "tags": ["crafting_table"],
+    "pattern": [
+      " E ",
+      "RIR",
+      " I "
+    ],
+    "key": {
+      "E": { "item": "minecraft:ender_pearl" },
+      "R": { "item": "minecraft:redstone" },
+      "I": { "item": "minecraft:iron_ingot" }
+    },
+    "unlock": [{ "item": "minecraft:ender_pearl" }],
+    "result": { "item": "rgb:collapse_tester", "count": 1 }
+  }
+}

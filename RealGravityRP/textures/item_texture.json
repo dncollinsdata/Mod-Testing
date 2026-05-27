@@ -1,0 +1,9 @@
+{
+  "resource_pack_name": "rgb",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "gravity_scanner": { "textures": "textures/items/gravity_scanner" },
+    "gravity_wrench": { "textures": "textures/items/gravity_wrench" },
+    "collapse_tester": { "textures": "textures/items/collapse_tester" }
+  }
+}

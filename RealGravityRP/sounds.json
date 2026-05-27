@@ -1,0 +1,21 @@
+{
+  "format_version": "1.14.0",
+  "sound_definitions": {
+    "rgb.crack": {
+      "category": "block",
+      "sounds": ["sounds/dig/stone1", "sounds/dig/stone2"]
+    },
+    "rgb.rumble": {
+      "category": "block",
+      "sounds": ["sounds/random/explode1", "sounds/random/explode2"]
+    },
+    "rgb.impact_stone": {
+      "category": "block",
+      "sounds": ["sounds/dig/stone3", "sounds/dig/stone4"]
+    },
+    "rgb.impact_soft": {
+      "category": "block",
+      "sounds": ["sounds/dig/gravel1", "sounds/dig/gravel2"]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shaped": {
+    "description": { "identifier": "rgb:support_beam" },
+    "tags": ["crafting_table"],
+    "pattern": [
+      "I",
+      "L",
+      "I"
+    ],
+    "key": {
+      "I": { "item": "minecraft:iron_ingot" },
+      "L": { "item": "minecraft:oak_log" }
+    },
+    "unlock": [{ "item": "minecraft:iron_ingot" }],
+    "result": { "item": "rgb:support_beam", "count": 2 }
+  }
+}

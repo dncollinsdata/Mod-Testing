@@ -1,0 +1,10 @@
+{
+  "resource_pack_name": "rgb",
+  "texture_name": "atlas.terrain",
+  "padding": 8,
+  "num_mip_levels": 4,
+  "texture_data": {
+    "support_beam": { "textures": "textures/blocks/support_beam" },
+    "reinforced_block": { "textures": "textures/blocks/reinforced_block" }
+  }
+}
