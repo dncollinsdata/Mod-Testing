@@ -101,20 +101,24 @@ function dispatchItem(player, typeId, block) {
   }
 }
 
-// Used in the air or on entities.
+// Scanner / tester: used in the air or on entities. The wrench is handled by
+// playerInteractWithBlock instead (it needs the targeted block), so skip it
+// here without consuming the shared cooldown — otherwise this earlier-firing
+// event would swallow the block-aware event on the same click.
 world.afterEvents.itemUse.subscribe((ev) => {
   const player = ev.source;
   const typeId = ev.itemStack?.typeId;
   if (!typeId || !typeId.startsWith("rgb:")) return;
+  if (typeId === "rgb:gravity_wrench") return;
   if (onCooldown(player)) return;
   dispatchItem(player, typeId, undefined);
 });
 
-// Used while aiming at a block (gives us the targeted block, needed for the wrench).
+// Wrench: used while aiming at a block (gives us the targeted block).
 world.afterEvents.playerInteractWithBlock.subscribe((ev) => {
   const player = ev.player;
   const typeId = ev.itemStack?.typeId;
-  if (!typeId || !typeId.startsWith("rgb:")) return;
+  if (typeId !== "rgb:gravity_wrench") return;
   if (onCooldown(player)) return;
-  dispatchItem(player, typeId, ev.block);
+  useWrench(player, ev.block);
 });
