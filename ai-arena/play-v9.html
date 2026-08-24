@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="theme-color" content="#071426"/>
+<title>AI Arena 3D V9</title>
+<style>
+:root{--panel:#071426e8;--red:#ef334e;--blue:#2e82ff;--gold:#ffc83d;--cyan:#63efff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#06111f;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overscroll-behavior:none}
+button{font:inherit;color:#fff;border:0;-webkit-appearance:none;appearance:none}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;background:#06111f}
+#hud{flex:0 0 auto;display:grid;grid-template-columns:1fr auto 1fr;gap:8px;padding:max(7px,env(safe-area-inset-top)) 9px 6px;background:linear-gradient(#071426,#071426d9);z-index:30}
+.card{background:#0e2742;border:1px solid #ffffff2d;border-radius:13px;padding:7px 9px;box-shadow:0 5px 15px #0005}.card.ai{text-align:right}.name{font-size:10px;font-weight:1000;letter-spacing:.04em;margin-bottom:5px}.bar{height:12px;background:#263a56;border-radius:99px;overflow:hidden}.fill{height:100%;width:100%;transition:width .12s linear}#rhp{background:linear-gradient(90deg,#ff805f,var(--red))}#bhp{background:linear-gradient(90deg,#68dcff,var(--blue))}.energy{height:6px;margin-top:5px}#ren{background:var(--gold)}#ben{background:var(--cyan)}#round{align-self:start;background:#0e2742;border:1px solid #ffffff2d;border-radius:99px;padding:7px 10px;font-size:9px;font-weight:1000;white-space:nowrap}
+#game{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;background:linear-gradient(#55bfff,#b9e8ff 42%,#18334d 43%)}#game canvas{position:absolute;inset:0;width:100%!important;height:100%!important;touch-action:none}
+#status{position:absolute;z-index:20;left:50%;top:9px;transform:translateX(-50%);max-width:88%;padding:7px 12px;border-radius:99px;background:#061426dc;border:1px solid #ffffff34;font-size:10px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+#chat{position:absolute;z-index:20;right:9px;top:45px;max-width:47%;padding:7px 9px;border-radius:13px 13px 3px 13px;background:#0e2742e8;border:1px solid #7bb7ff55;font-size:10px;font-weight:800;line-height:1.25;opacity:0;transform:translateY(-5px);transition:.18s;pointer-events:none}#chat.show{opacity:1;transform:none}
+#overlay{position:absolute;inset:0;z-index:40;display:none;align-items:center;justify-content:center;flex-direction:column;background:#04101dd8;text-align:center;padding:25px}#overlay.show{display:flex}#result{font-size:clamp(38px,10vw,72px);font-weight:1000;text-shadow:0 7px 22px #0008}#sub{font-size:13px;font-weight:800;margin:8px 0 17px}.bigBtn{background:#fff;color:#0b1b31;padding:13px 22px;border-radius:99px;font-weight:1000}
+#loading{position:absolute;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:#071426;font-weight:1000;letter-spacing:.03em}#loading.hide{display:none}
+#controls{flex:0 0 auto;z-index:30;background:linear-gradient(#0a1b30,#05111e);padding:7px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));display:grid;grid-template-columns:116px 1fr;gap:7px;touch-action:none}
+#move{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:5px}.moveBtn,.act{min-height:44px;border:2px solid #ffffff5c;border-radius:13px;font-weight:1000;box-shadow:0 4px 10px #0004;touch-action:none}.moveBtn{background:#243c5b;font-size:18px}.moveBtn:active,.moveBtn.on,.act:active{transform:scale(.94);filter:brightness(1.25)}
+#acts{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.act{font-size:8px;padding:2px;line-height:1.05}.p1{background:#cf213b}.p2{background:#a9182f}.kick{background:#dd5c31}.sweep{background:#a24e22}.upper{background:#8d36cf}.dash{background:#5b2dc0}.blast{background:#df9313}.combo{background:#b46f08}.block{background:#2171bb}.dodge{background:#147e92}.jump{background:#16965f}
+#special{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+@media(max-width:500px){#controls{grid-template-columns:102px 1fr;gap:5px;padding-top:5px}#acts,#special{gap:4px}.moveBtn,.act{min-height:41px}.act{font-size:7.5px}.card{padding:6px 7px}.name{font-size:9px}}
+@media(orientation:landscape){#controls{grid-template-columns:108px 1fr}.moveBtn,.act{min-height:37px}#status{top:5px}#chat{top:37px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hud">
+    <div class="card"><div class="name">🔴 YOU · RED</div><div class="bar"><div id="rhp" class="fill"></div></div><div class="bar energy"><div id="ren" class="fill"></div></div></div>
+    <div id="round">ROUND 2 · 3D</div>
+    <div class="card ai"><div class="name">🔵 CHATGPT · BLUE</div><div class="bar"><div id="bhp" class="fill"></div></div><div class="bar energy"><div id="ben" class="fill"></div></div></div>
+  </div>
+  <div id="game">
+    <div id="loading">LOADING 3D ARENA…</div>
+    <div id="status">Move in 3D. Get close and attack.</div>
+    <div id="chat">I remember Round 1. 😎</div>
+    <div id="overlay"><div id="result"></div><div id="sub"></div><button id="again" class="bigBtn" type="button">FIGHT AGAIN</button></div>
+  </div>
+  <div id="controls">
+    <div id="move">
+      <button class="moveBtn" id="left" type="button">◀</button><button class="moveBtn" id="right" type="button">▶</button>
+      <button class="moveBtn" id="forward" type="button">▲</button><button class="moveBtn" id="back" type="button">▼</button>
+    </div>
+    <div>
+      <div id="acts">
+        <button class="act p1" id="light" type="button">👊 LIGHT</button><button class="act p2" id="heavy" type="button">💥 HEAVY</button><button class="act kick" id="kick" type="button">🦵 KICK</button><button class="act sweep" id="sweep" type="button">🌀 SWEEP</button><button class="act upper" id="upper" type="button">⬆ UPPERCUT</button>
+      </div>
+      <div id="special">
+        <button class="act dash" id="dash" type="button">💨 DASH</button><button class="act blast" id="blast" type="button">⚡ BLAST</button><button class="act combo" id="combo" type="button">🔥 COMBO</button><button class="act block" id="block" type="button">🛡 BLOCK</button><button class="act dodge" id="dodge" type="button">↪ DODGE</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr;margin-top:4px"><button class="act jump" id="jump" type="button">⬆️ JUMP</button></div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);const UI={rhp:$('rhp'),bhp:$('bhp'),ren:$('ren'),ben:$('ben'),status:$('status'),chat:$('chat'),overlay:$('overlay'),result:$('result'),sub:$('sub'),again:$('again'),loading:$('loading')};
+if(!window.THREE){UI.loading.textContent='3D could not load. Reopen this game window.';return;}
+const gameEl=$('game'),scene=new THREE.Scene();scene.background=new THREE.Color(0x77cfff);scene.fog=new THREE.Fog(0x77cfff,18,34);
+const camera=new THREE.PerspectiveCamera(48,1,.1,100);camera.position.set(0,7.5,11.5);camera.lookAt(0,1.2,0);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;gameEl.prepend(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xdaf4ff,0x294015,1.45));const sun=new THREE.DirectionalLight(0xffffff,1.35);sun.position.set(-6,12,7);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-11;sun.shadow.camera.right=11;sun.shadow.camera.top=11;sun.shadow.camera.bottom=-11;scene.add(sun);
+const floorMat=new THREE.MeshStandardMaterial({color:0x8d969e,roughness:.76,metalness:.05});const floor=new THREE.Mesh(new THREE.CylinderGeometry(7.2,7.2,.45,64),floorMat);floor.receiveShadow=true;floor.position.y=-.24;scene.add(floor);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(6.1,.11,10,64),new THREE.MeshStandardMaterial({color:0x20384e,metalness:.5,roughness:.3}));ring.rotation.x=Math.PI/2;ring.position.y=.02;scene.add(ring);
+for(let i=0;i<12;i++){const a=i/12*Math.PI*2,p=new THREE.Mesh(new THREE.CylinderGeometry(.09,.13,2.4,8),new THREE.MeshStandardMaterial({color:i%2?0x2e82ff:0xef334e}));p.position.set(Math.cos(a)*6.5,1.2,Math.sin(a)*6.5);p.castShadow=true;scene.add(p)}
+const crowdMat=new THREE.MeshStandardMaterial({color:0x26465f,roughness:1});for(let i=0;i<32;i++){const a=i/32*Math.PI*2;const m=new THREE.Mesh(new THREE.SphereGeometry(.23,8,6),crowdMat);m.position.set(Math.cos(a)*(8.3+(i%3)*.35),1+(i%2)*.3,Math.sin(a)*(8.3+(i%3)*.35));scene.add(m)}
+function mat(c){return new THREE.MeshStandardMaterial({color:c,roughness:.52,metalness:.08})}
+function fighter(color,dark){const root=new THREE.Group(),torso=new THREE.Mesh(new THREE.BoxGeometry(1.05,1.55,.65),mat(color));torso.position.y=2.1;torso.castShadow=true;root.add(torso);const head=new THREE.Mesh(new THREE.SphereGeometry(.48,18,14),mat(color));head.position.y=3.35;head.castShadow=true;root.add(head);const hair=new THREE.Mesh(new THREE.SphereGeometry(.49,16,8,0,Math.PI*2,0,Math.PI/2),mat(0x182438));hair.position.y=3.55;hair.scale.y=.55;root.add(hair);
+function limb(w,h,d,c){const pivot=new THREE.Group(),mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));mesh.position.y=-h/2;mesh.castShadow=true;pivot.add(mesh);return pivot}
+const la=limb(.34,1.28,.34,color),ra=limb(.34,1.28,.34,color),ll=limb(.4,1.45,.43,dark),rl=limb(.4,1.45,.43,dark);la.position.set(-.72,2.65,0);ra.position.set(.72,2.65,0);ll.position.set(-.32,1.35,0);rl.position.set(.32,1.35,0);root.add(la,ra,ll,rl);root.userData={torso,head,la,ra,ll,rl,baseY:0};return root}
+const red=fighter(0xef334e,0x92182a),blue=fighter(0x2e82ff,0x123b9a);red.position.set(-2.15,0,.75);blue.position.set(2.15,0,-.75);blue.rotation.y=Math.PI;scene.add(red,blue);
+const state={redHP:100,blueHP:100,redEN:100,blueEN:100,over:false,redBusy:false,blueBusy:false,redBlock:false,blueBlock:false,redInv:false,blueInv:false,move:{l:false,r:false,f:false,b:false},last:performance.now(),aiTimer:0,round:2,shake:0};
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function ui(){UI.rhp.style.width=state.redHP+'%';UI.bhp.style.width=state.blueHP+'%';UI.ren.style.width=state.redEN+'%';UI.ben.style.width=state.blueEN+'%'}function say(t){UI.status.textContent=t}let chatTimer;function chat(t){UI.chat.textContent='BLUE: '+t;UI.chat.classList.add('show');clearTimeout(chatTimer);chatTimer=setTimeout(()=>UI.chat.classList.remove('show'),1800)}
+function d(){return red.position.distanceTo(blue.position)}function face(){const dx=blue.position.x-red.position.x,dz=blue.position.z-red.position.z;red.rotation.y=Math.atan2(dx,dz);blue.rotation.y=Math.atan2(-dx,-dz)}function resetPose(f){const u=f.userData;u.la.rotation.set(0,0,0);u.ra.rotation.set(0,0,0);u.ll.rotation.set(0,0,0);u.rl.rotation.set(0,0,0);f.rotation.z=0;f.scale.set(1,1,1)}
+function hit(target,n,who){if(state.over)return;const inv=target===red?state.redInv:state.blueInv;if(inv)return;let block=target===red?state.redBlock:state.blueBlock;if(block)n=Math.max(1,Math.ceil(n*.28));if(target===red)state.redHP=clamp(state.redHP-n,0,100);else state.blueHP=clamp(state.blueHP-n,0,100);state.shake=.2;target.scale.set(1.12,.92,1.12);setTimeout(()=>target.scale.set(1,1,1),100);ui();if((target===red?state.redHP:state.blueHP)<=0)finish(target===blue);else if(who==='red'&&Math.random()<.3)chat(['Nice hit.','Okay, I felt that.','You are getting faster.'][Math.floor(Math.random()*3)])}
+function finish(redWon){state.over=true;UI.result.textContent=redWon?'RED WINS!':'BLUE WINS!';UI.sub.textContent=redWon?'You beat ChatGPT in the 3D arena!':'ChatGPT takes this round. Rematch?';UI.overlay.classList.add('show');(redWon?blue:red).rotation.z=redWon?-1.25:1.25}
+function animAttack(f,type,ms){resetPose(f);const u=f.userData;switch(type){case'light':u.ra.rotation.x=-1.45;break;case'heavy':u.ra.rotation.x=-1.9;u.la.rotation.x=-.5;f.rotation.z=-.12;break;case'kick':u.rl.rotation.x=-1.4;break;case'sweep':u.rl.rotation.z=-1.25;f.rotation.y+=.55;break;case'upper':u.ra.rotation.z=-1.3;u.ra.rotation.x=-.7;break;case'combo':u.ra.rotation.x=-1.4;u.la.rotation.x=-1.2;u.rl.rotation.x=-1.0;break}setTimeout(()=>resetPose(f),ms)}
+function spend(which,n){const key=which==='red'?'redEN':'blueEN';if(state[key]<n)return false;state[key]-=n;ui();return true}
+function playerAttack(type,damage,range,cost=0){if(state.over||state.redBusy)return;if(cost&&!spend('red',cost)){say('Not enough energy yet.');return}state.redBusy=true;animAttack(red,type,320);say('RED '+type.toUpperCase()+'!');setTimeout(()=>{if(d()<=range)hit(blue,damage,'red');else say('Missed. Move closer or use BLAST.')},130);setTimeout(()=>state.redBusy=false,360)}
+function dashStrike(){if(state.redBusy||state.over||!spend('red',16))return;state.redBusy=true;const dir=new THREE.Vector3().subVectors(blue.position,red.position).normalize();red.position.addScaledVector(dir,Math.min(2.3,d()-.9));animAttack(red,'heavy',320);say('RED DASH STRIKE!');setTimeout(()=>{if(d()<2.3)hit(blue,15,'red')},130);setTimeout(()=>state.redBusy=false,360)}
+function blastFrom(attacker,target,who){const orb=new THREE.Mesh(new THREE.SphereGeometry(.19,12,10),new THREE.MeshBasicMaterial({color:who==='red'?0xffc42f:0x66eaff}));orb.position.copy(attacker.position).add(new THREE.Vector3(0,2.3,0));scene.add(orb);const start=performance.now(),dur=360;function fly(now){const t=Math.min(1,(now-start)/dur);orb.position.lerpVectors(attacker.position.clone().add(new THREE.Vector3(0,2.3,0)),target.position.clone().add(new THREE.Vector3(0,2,0)),t);if(t<1)requestAnimationFrame(fly);else{scene.remove(orb);hit(target,18,who)}}requestAnimationFrame(fly)}
+function blast(){if(state.over||state.redBusy||!spend('red',24))return;state.redBusy=true;say('RED POWER BLAST!');blastFrom(red,blue,'red');setTimeout(()=>state.redBusy=false,430)}
+function combo(){if(state.over||state.redBusy||!spend('red',30))return;state.redBusy=true;say('RED 3-HIT COMBO!');animAttack(red,'combo',520);[90,220,360].forEach((t,i)=>setTimeout(()=>{if(d()<2.5)hit(blue,[6,7,10][i],'red')},t));setTimeout(()=>state.redBusy=false,560)}
+function block(){if(state.over)return;state.redBlock=true;red.userData.la.rotation.x=-1.2;red.userData.ra.rotation.x=-1.2;say('RED BLOCKING');setTimeout(()=>{state.redBlock=false;resetPose(red)},800)}
+function dodge(){if(state.over||!spend('red',10))return;state.redInv=true;say('RED DODGE!');const side=new THREE.Vector3(1,0,0).applyAxisAngle(new THREE.Vector3(0,1,0),red.rotation.y);red.position.addScaledVector(side,1.25);setTimeout(()=>state.redInv=false,520)}
+function jump(){if(state.over||state.redBusy)return;state.redBusy=true;say('RED JUMP!');const start=performance.now();function j(now){const t=Math.min(1,(now-start)/520);red.position.y=Math.sin(t*Math.PI)*1.45;if(t<1)requestAnimationFrame(j);else{red.position.y=0;state.redBusy=false}}requestAnimationFrame(j)}
+function aiAttack(){if(state.over||state.blueBusy)return;const dist=d();if(dist>3.2){const dir=new THREE.Vector3().subVectors(red.position,blue.position).normalize();blue.position.addScaledVector(dir,.65);if(Math.random()<.18&&state.blueEN>=24){state.blueEN-=24;ui();chat('Try dodging this.');blastFrom(blue,red,'blue')}return}state.blueBusy=true;const roll=Math.random();if(roll<.18){state.blueBlock=true;chat('I remember your power spam. Blocking.');blue.userData.la.rotation.x=-1.2;blue.userData.ra.rotation.x=-1.2;setTimeout(()=>{state.blueBlock=false;resetPose(blue)},650);setTimeout(()=>state.blueBusy=false,700);return}let type='light',dam=6;if(roll<.38){type='light';dam=6}else if(roll<.58){type='kick';dam=8}else if(roll<.73){type='upper';dam=11}else if(roll<.88&&state.blueEN>=16){type='heavy';dam=14;state.blueEN-=16}else{type='sweep';dam=10}ui();animAttack(blue,type,330);setTimeout(()=>{if(d()<2.65)hit(red,dam,'blue')},130);setTimeout(()=>state.blueBusy=false,380)}
+function bindHold(id,key){const b=$(id);const on=e=>{e.preventDefault();state.move[key]=true;b.classList.add('on');try{b.setPointerCapture(e.pointerId)}catch{}};const off=e=>{e.preventDefault();state.move[key]=false;b.classList.remove('on')};b.addEventListener('pointerdown',on);['pointerup','pointercancel','lostpointercapture','pointerleave'].forEach(x=>b.addEventListener(x,off))}
+bindHold('left','l');bindHold('right','r');bindHold('forward','f');bindHold('back','b');
+const taps={light:()=>playerAttack('light',6,2.45),heavy:()=>playerAttack('heavy',11,2.55,8),kick:()=>playerAttack('kick',8,2.65),sweep:()=>playerAttack('sweep',12,2.7,8),upper:()=>playerAttack('upper',14,2.25,10),dash:dashStrike,blast,combo,block,dodge,jump};Object.entries(taps).forEach(([id,fn])=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();fn()}));
+UI.again.addEventListener('pointerdown',e=>{e.preventDefault();state.redHP=state.blueHP=100;state.redEN=state.blueEN=100;state.over=false;state.redBusy=state.blueBusy=false;state.redBlock=state.blueBlock=false;red.position.set(-2.15,0,.75);blue.position.set(2.15,0,-.75);resetPose(red);resetPose(blue);UI.overlay.classList.remove('show');ui();say('ROUND 2 REMATCH. FIGHT!');chat('Round 1 taught me your tricks.');});
+function resize(){const w=gameEl.clientWidth,h=gameEl.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/Math.max(1,h);camera.updateProjectionMatrix()}window.addEventListener('resize',resize);resize();
+function loop(now){requestAnimationFrame(loop);const dt=Math.min(.035,(now-state.last)/1000||0);state.last=now;if(!state.over){const speed=3.3*dt;let vx=(state.move.r?1:0)-(state.move.l?1:0),vz=(state.move.b?1:0)-(state.move.f?1:0);if(vx||vz){const len=Math.hypot(vx,vz)||1;red.position.x=clamp(red.position.x+vx/len*speed,-5.6,5.6);red.position.z=clamp(red.position.z+vz/len*speed,-5.6,5.6)}const rd=Math.hypot(red.position.x,red.position.z);if(rd>5.8){red.position.x*=5.8/rd;red.position.z*=5.8/rd}state.aiTimer-=dt;if(state.aiTimer<=0){aiAttack();state.aiTimer=.52+Math.random()*.56}state.redEN=clamp(state.redEN+9*dt,0,100);state.blueEN=clamp(state.blueEN+8*dt,0,100);ui();face();const mid=red.position.clone().add(blue.position).multiplyScalar(.5);const sep=d();const targetCam=new THREE.Vector3(mid.x*.18,7.0+Math.min(1,sep*.08),10.2+Math.min(2.2,sep*.23));camera.position.lerp(targetCam,.035);camera.lookAt(mid.x*.12,1.45,mid.z*.12);if(state.shake>0){state.shake-=dt;camera.position.x+=(Math.random()-.5)*.08;camera.position.y+=(Math.random()-.5)*.05}}
+renderer.render(scene,camera)}
+ui();UI.loading.classList.add('hide');say('3D ROUND 2. Move in any direction and fight!');chat('I am BLUE. Come get me. 😎');requestAnimationFrame(loop);
+document.addEventListener('contextmenu',e=>e.preventDefault());document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+})();
+</script>
+</body>
+</html>
